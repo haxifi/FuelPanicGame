@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Fuel Panic</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <!-- Portrait rotation prompt (phones only) -->
+    <div id="rotate-overlay">
+        <div class="phone-icon"></div>
+        <h2>⛽ Ruota il telefono!</h2>
+        <p>Per giocare a <strong>Fuel Panic</strong><br>metti il telefono in orizzontale</p>
+    </div>
+
+    <script src="src/events.js"> </script>
+    <script src="lib/phaser.min.js"></script>
+    <script src="src/utils/GraphicsGenerator.js"></script>
+    <script src="src/utils/SoundGenerator.js"></script>
+    <script src="src/objects/Bullet.js"></script>
+    <script src="src/objects/Customer.js"></script>
+    <script src="src/objects/FuelPump.js"></script>
+    <script src="src/objects/Vehicle.js"></script>
+    <script src="src/scenes/BootScene.js"></script>
+    <script src="src/scenes/MenuScene.js"></script>
+    <script src="src/scenes/GameScene.js"></script>
+    <script src="src/scenes/GameOverScene.js"></script>
+    <script src="src/main.js"></script>
+</body>
+</html>
