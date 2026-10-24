@@ -67,7 +67,7 @@ Your job is to identify the **hoarders** — and stop them.
 ```bash
 # Clone the repository
 git clone git@github.com:haxifi/FuelPanicGame.git
-cd FuelPanic
+cd FuelPanicGame
 
 # Option A — Python (no install needed)
 python -m http.server 8080
@@ -85,7 +85,7 @@ Open **http://localhost:8080** in your browser and play.
 ## 📁 Project Structure
 
 ```
-FuelPanic/
+FuelPanicGame/
 ├── index.html                      ← Entry point & responsive viewport
 ├── package.json                    ← npm scripts (dev / start)
 ├── phasereditor2d.config.json      ← Phaser Editor project descriptor

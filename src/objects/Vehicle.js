@@ -6,7 +6,8 @@ class Vehicle extends Phaser.GameObjects.Sprite {
         const textureMap = {
             small: 'carSmall',
             suv: 'carSUV',
-            van: 'carVan'
+            van: 'carVan',
+            ape: 'apeCar'
         };
         super(scene, x, y, textureMap[type] || 'carSmall');
         scene.add.existing(this);

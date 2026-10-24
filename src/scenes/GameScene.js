@@ -266,67 +266,91 @@ class GameScene extends Phaser.Scene {
         // Screen shake
         this.cameras.main.shake(50, 0.003);
 
-        // Check hits on customers
+        // Check hits on customers.
+        // An ApeCar requires two hits: its first hit is valid, but does not
+        // capture it and must not trigger the penalty for hitting a normal customer.
         let hitSomething = false;
+
         for (let i = this.customers.length - 1; i >= 0; i--) {
             const cust = this.customers[i];
-            if (cust.state === Customer.STATES.GONE || cust.state === Customer.STATES.HIT) continue;
 
-            if (cust.checkHit(x, y)) {
-                const wasHoarder = cust.hit();
-                hitSomething = true;
+            if (
+                cust.state === Customer.STATES.GONE ||
+                cust.state === Customer.STATES.HIT
+            ) {
+                continue;
+            }
 
-                if (wasHoarder) {
-                    // Good hit!
-                    this.hoardersCaught++;
-                    this.combo++;
-                    this.comboTimer = 3000;
-                    const comboBonus = this.combo > 1 ? this.combo : 0;
-                    const points = 100 + comboBonus * 50;
-                    this.score += points;
-                    this.playSound('sfx_hit');
+            if (!cust.checkHit(x, y)) {
+                continue;
+            }
 
-                    // Show points
-                    this.showPoints(x, y - 30, `+${points}`, '#00ff00');
+            const isApeCar = cust.isApeCar === true;
+            const wasHoarder = cust.hit();
+            hitSomething = true;
 
-                    if (this.combo > 1) {
-                        this.comboText.setText(`COMBO x${this.combo}!`);
-                        this.comboText.setAlpha(1);
-                        this.tweens.add({
-                            targets: this.comboText,
-                            alpha: 0,
-                            y: 80,
-                            duration: 1500,
-                            onComplete: () => {
-                                this.comboText.y = 100;
-                            }
-                        });
-                    }
+            // Customer.hit() returns false when the ApeCar takes its first hit.
+            // It remains active instead of entering HIT/GONE, so do not penalize it.
+            const apeCarSurvivedHit =
+                isApeCar &&
+                !wasHoarder &&
+                cust.state !== Customer.STATES.HIT &&
+                cust.state !== Customer.STATES.GONE;
 
-                    // Particle burst
-                    this.createHitParticles(x, y);
-                } else {
-                    // Bad hit - hit normal customer!
-                    this.normalHit++;
-                    this.score = Math.max(0, this.score - 150);
-                    this.combo = 0;
-                    this.playSound('sfx_miss');
-                    this.showPoints(x, y - 30, '-150', '#ff0000');
+            if (apeCarSurvivedHit) {
+                this.playSound('sfx_hit');
+                this.showPoints(x, y - 30, 'COLPITO!', '#ffaa00');
+                this.createHitParticles(x, y);
+            } else if (wasHoarder) {
+                // Hoarder captured: award points and increase the combo.
+                this.hoardersCaught++;
+                this.combo++;
+                this.comboTimer = 3000;
 
-                    // Red flash
-                    this.cameras.main.flash(200, 255, 0, 0, false, null, this);
+                const comboBonus = this.combo > 1 ? this.combo : 0;
+                const points = 100 + comboBonus * 50;
+                this.score += points;
 
-                    // Penalty: stolen fuel increases
-                    this.hoardersEscaped += 0.5;
-                    this.updateFuelStolenBar();
+                this.playSound('sfx_hit');
+                this.showPoints(x, y - 30, `+${points}`, '#00ff00');
+
+                if (this.combo > 1) {
+                    this.comboText.setText(`COMBO x${this.combo}!`);
+                    this.comboText.setAlpha(1);
+
+                    this.tweens.add({
+                        targets: this.comboText,
+                        alpha: 0,
+                        y: 80,
+                        duration: 1500,
+                        onComplete: () => {
+                            this.comboText.y = 100;
+                        }
+                    });
                 }
 
-                break; // Only hit one customer per shot
+                this.createHitParticles(x, y);
+            } else {
+                // Normal customer hit: apply the existing penalty.
+                this.normalHit++;
+                this.score = Math.max(0, this.score - 150);
+                this.combo = 0;
+
+                this.playSound('sfx_miss');
+                this.showPoints(x, y - 30, '-150', '#ff0000');
+
+                this.cameras.main.flash(200, 255, 0, 0, false, null, this);
+
+                // Penalty: stolen fuel increases.
+                this.hoardersEscaped += 0.5;
+                this.updateFuelStolenBar();
             }
+
+            break; // Only one customer can be hit by each shot.
         }
 
         if (!hitSomething) {
-            // Bullet hole on background
+            // Bullet hole on background.
             new Bullet(this, x, y);
             this.playSound('sfx_miss');
         }
@@ -390,7 +414,13 @@ class GameScene extends Phaser.Scene {
 
         // Speed up spawning
         const newDelay = Math.max(800, 2500 - this.difficulty * 200);
-        this.spawnTimer.delay = newDelay;
+        this.spawnTimer.remove();
+        this.spawnTimer = this.time.addEvent({
+            delay: newDelay,
+            callback: this.spawnCustomer,
+            callbackScope: this,
+            loop: true
+        });
 
         // Flash difficulty change
         const flash = this.add.text(512, 150, `⬆️ DIFFICOLTÀ AUMENTATA!`, {

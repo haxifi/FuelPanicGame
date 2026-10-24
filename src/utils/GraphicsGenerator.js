@@ -8,6 +8,7 @@ class GraphicsGenerator {
         this.createMuzzleFlash(scene);
         this.createFuelPump(scene);
         this.createVehicles(scene);
+        this.createApeCar(scene);
         this.createCustomers(scene);
         this.createJerryCan(scene);
         this.createFuelTanker(scene);
@@ -136,6 +137,51 @@ class GraphicsGenerator {
         g3.fillCircle(90, 54, 5);
         g3.generateTexture('carVan', 110, 63);
         g3.destroy();
+    }
+
+    static createApeCar(scene) {
+        const g = scene.make.graphics({
+            x: 0,
+            y: 0,
+            add: false
+        });
+
+        // Carrozzeria rossa
+        g.fillStyle(0xc62828, 1);
+        g.fillRoundedRect(12, 20, 66, 30, 5);
+
+        // Cabina
+        g.fillStyle(0xe53935, 1);
+        g.fillRoundedRect(12, 5, 32, 27, 5);
+
+        // Finestrino
+        g.fillStyle(0xb3e5fc, 1);
+        g.fillRoundedRect(17, 9, 21, 12, 2);
+
+        // Cassone
+        g.fillStyle(0x8e1818, 1);
+        g.fillRect(45, 25, 32, 15);
+
+        // Taniche gialle nel cassone
+        g.fillStyle(0xffc107, 1);
+        g.fillRoundedRect(49, 18, 10, 17, 2);
+        g.fillRoundedRect(62, 18, 10, 17, 2);
+
+        // Ruote
+        g.fillStyle(0x222222, 1);
+        g.fillCircle(25, 49, 8);
+        g.fillCircle(68, 49, 8);
+
+        g.fillStyle(0xcccccc, 1);
+        g.fillCircle(25, 49, 3);
+        g.fillCircle(68, 49, 3);
+
+        // Faro
+        g.fillStyle(0xfff176, 1);
+        g.fillRect(9, 29, 5, 6);
+
+        g.generateTexture('apeCar', 90, 60);
+        g.destroy();
     }
 
     static createCustomers(scene) {
