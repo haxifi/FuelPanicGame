@@ -6,17 +6,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Fuel Panic</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="src/styles/main.css">
 </head>
 <body>
     <!-- Portrait rotation prompt (phones only) -->
     <div id="rotate-overlay">
         <div class="phone-icon"></div>
-        <h2>⛽ Ruota il telefono!</h2>
-        <p>Per giocare a <strong>Fuel Panic</strong><br>metti il telefono in orizzontale</p>
+        <h2 data-i18n="rotate_overlay.title"></h2>
+        <p data-i18n-html="rotate_overlay.message"></p>
     </div>
 
-    <script src="src/events.js"> </script>
+    <script src="src/i18n/i18n.js"></script>
+    <script src="src/events.js"></script>
     <script src="lib/phaser.min.js"></script>
     <script src="src/utils/GraphicsGenerator.js"></script>
     <script src="src/utils/SoundGenerator.js"></script>

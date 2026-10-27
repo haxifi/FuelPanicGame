@@ -4,6 +4,7 @@
   "description": "Fuel Panic - A satirical arcade FPS built with Phaser 3",
   "scripts": {
     "dev": "npx http-server -p 8080 -c-1",
+    "serve:network": "npx http-server -p 8080 -c-1 -a 0.0.0.0",
     "start": "npx http-server -p 8080 -c-1"
   },
   "license": "MIT",

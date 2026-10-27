@@ -1,0 +1,256 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#18162e"/>
+      <stop offset="50%" stop-color="#121124"/>
+      <stop offset="100%" stop-color="#0b0a17"/>
+    </linearGradient>
+
+    <!-- Glowing Border -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb700"/>
+      <stop offset="45%" stop-color="#ff4500"/>
+      <stop offset="80%" stop-color="#d50000"/>
+      <stop offset="100%" stop-color="#ff9100"/>
+    </linearGradient>
+
+    <!-- 3D Letter T Gradient -->
+    <linearGradient id="tGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff875"/>
+      <stop offset="22%" stop-color="#ffc400"/>
+      <stop offset="58%" stop-color="#ff5500"/>
+      <stop offset="92%" stop-color="#cc1100"/>
+      <stop offset="100%" stop-color="#8a0b00"/>
+    </linearGradient>
+
+    <!-- T Side Bevel Gradient -->
+    <linearGradient id="tBevel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Outer Roaring Flame -->
+    <linearGradient id="flameOuter" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#c62828"/>
+      <stop offset="40%" stop-color="#ff3d00"/>
+      <stop offset="85%" stop-color="#ff9100"/>
+      <stop offset="100%" stop-color="#ffea00"/>
+    </linearGradient>
+
+    <!-- Mid Vibrant Flame -->
+    <linearGradient id="flameMid" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ff5722"/>
+      <stop offset="50%" stop-color="#ff9800"/>
+      <stop offset="90%" stop-color="#ffee55"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+
+    <!-- Inner Core White-Hot Flame -->
+    <linearGradient id="flameInner" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#ffb300"/>
+      <stop offset="60%" stop-color="#fff9c4"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+
+    <!-- Glossy Gasoline Drop -->
+    <radialGradient id="gasolineDrop" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fff59d"/>
+      <stop offset="35%" stop-color="#ffb300"/>
+      <stop offset="75%" stop-color="#f57c00"/>
+      <stop offset="100%" stop-color="#b71c1c"/>
+    </radialGradient>
+
+    <!-- Drop Glow Behind Drop -->
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- 1. SQUIRCLE BACKGROUND -->
+  <rect x="18" y="18" width="476" height="476" rx="108" ry="108"
+        fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="14"/>
+
+  <!-- Warm ambient flare behind the T -->
+  <circle cx="256" cy="240" r="190" fill="#ff4d00" opacity="0.14" filter="url(#softGlow)"/>
+
+  <!-- 2. FLAMES (Organic, dynamic, overlapping the top crossbar) -->
+  <!-- Outer Flame Layer -->
+  <path d="
+    M 68,220
+    C 58,180 75,135 98,102
+    C 108,138 122,148 135,118
+    C 148,85 170,45 205,32
+    C 212,68 198,108 226,88
+    C 246,62 258,22 286,26
+    C 298,62 284,112 320,78
+    C 342,56 366,74 376,104
+    C 386,132 396,120 408,94
+    C 424,124 452,170 444,220
+    C 420,240 380,240 350,225
+    C 320,210 290,230 256,220
+    C 220,230 190,210 160,225
+    C 130,240 90,240 68,220
+    Z"
+    fill="url(#flameOuter)"
+    stroke="#160200"
+    stroke-width="12"
+    stroke-linejoin="round"/>
+
+  <!-- Mid Flame Layer -->
+  <path d="
+    M 88,215
+    C 80,185 96,150 114,122
+    C 124,148 136,154 148,132
+    C 162,105 182,68 212,56
+    C 218,85 208,118 232,100
+    C 250,80 260,46 282,50
+    C 292,78 282,118 312,94
+    C 330,76 350,92 358,116
+    C 368,140 376,130 388,112
+    C 402,138 426,178 424,215
+    C 390,230 350,215 320,220
+    C 285,225 240,215 200,222
+    C 160,215 120,230 88,215
+    Z"
+    fill="url(#flameMid)"/>
+
+  <!-- Inner Hot Core -->
+  <path d="
+    M 115,210
+    C 112,185 125,162 138,142
+    C 146,160 156,162 166,146
+    C 178,122 198,92 220,82
+    C 225,104 218,126 238,112
+    C 252,98 260,70 276,74
+    C 284,98 276,126 298,108
+    C 312,96 326,108 334,126
+    C 342,146 350,138 358,126
+    C 370,148 392,185 394,210
+    Z"
+    fill="url(#flameInner)"/>
+
+  <!-- Flame Sparks & Embers -->
+  <circle cx="145" cy="52" r="8" fill="#fff566"/>
+  <circle cx="335" cy="42" r="9" fill="#fff566"/>
+  <circle cx="244" cy="14" r="7" fill="#ffcc00"/>
+  <circle cx="95" cy="76" r="6" fill="#ff7700"/>
+  <circle cx="418" cy="62" r="7" fill="#ff9100"/>
+  <circle cx="282" cy="10" r="4.5" fill="#ffffff"/>
+
+  <!-- 3. THE LETTER "T" (Stylized Arcade / Muscle Car Geometry) -->
+  <!-- 3D Base Shadow -->
+  <path d="
+    M 70,195
+    L 442,195
+    L 426,285
+    L 316,285
+    L 316,462
+    C 316,468 310,474 304,474
+    L 208,474
+    C 202,474 196,468 196,462
+    L 196,285
+    L 86,285
+    Z"
+    fill="#080710"/>
+
+  <!-- Heavy Outer Outline -->
+  <path d="
+    M 74,188
+    L 438,188
+    L 424,276
+    L 310,276
+    L 310,452
+    C 310,458 304,464 298,464
+    L 214,464
+    C 208,464 202,458 202,452
+    L 202,276
+    L 88,276
+    Z"
+    fill="#160402"
+    stroke="#160402"
+    stroke-width="16"
+    stroke-linejoin="round"/>
+
+  <!-- T Main Body -->
+  <path d="
+    M 80,194
+    L 432,194
+    L 420,270
+    L 304,270
+    L 304,448
+    L 208,448
+    L 208,270
+    L 92,270
+    Z"
+    fill="url(#tGrad)"/>
+
+  <!-- Top Bar High-Gloss Rim (Arcade Chrome Reflection) -->
+  <path d="
+    M 88,200
+    L 424,200
+    L 416,218
+    L 94,218
+    Z"
+    fill="#ffffff"
+    opacity="0.55"/>
+
+  <!-- Left Angled Edge Highlight -->
+  <path d="
+    M 88,200
+    L 100,264
+    L 92,264
+    Z"
+    fill="#ffffff"
+    opacity="0.35"/>
+
+  <!-- Vertical Stem Spine Highlight -->
+  <path d="
+    M 214,274
+    L 236,274
+    L 236,442
+    L 214,442
+    Z"
+    fill="#ffffff"
+    opacity="0.22"/>
+
+  <!-- Bottom Dark Accent -->
+  <path d="
+    M 208,432
+    L 304,432
+    L 304,448
+    L 208,448
+    Z"
+    fill="#4a0400"
+    opacity="0.6"/>
+
+  <!-- 4. PETROL / FUEL DROPLET WITH SPECULAR GLOSS -->
+  <!-- Main Petrol Drop (Bottom-Right) -->
+  <g transform="translate(328, 280) scale(1.15)">
+    <!-- Droplet Drop Shadow -->
+    <path d="M 30,6 C 30,6 64,48 64,74 C 64,95 49,110 30,110 C 11,110 -4,95 -4,74 C -4,48 30,6 30,6 Z"
+          fill="#06060c" opacity="0.65" transform="translate(4, 7)"/>
+    <!-- Droplet Heavy Outline -->
+    <path d="M 30,6 C 30,6 64,48 64,74 C 64,95 49,110 30,110 C 11,110 -4,95 -4,74 C -4,48 30,6 30,6 Z"
+          fill="#7f0000" stroke="#160200" stroke-width="9" stroke-linejoin="round"/>
+    <!-- Droplet Golden Amber Infill -->
+    <path d="M 30,12 C 30,12 58,49 58,74 C 58,90 45,103 30,103 C 15,103 2,90 2,74 C 2,49 30,12 30,12 Z"
+          fill="url(#gasolineDrop)"/>
+    <!-- Curved Specular Highlight -->
+    <ellipse cx="18" cy="68" rx="7" ry="16" transform="rotate(-26 18 68)" fill="#ffffff" opacity="0.82"/>
+    <circle cx="28" cy="44" r="4.5" fill="#ffffff" opacity="0.75"/>
+    <ellipse cx="38" cy="85" rx="9" ry="3.5" fill="#ffe082" opacity="0.5"/>
+  </g>
+
+  <!-- Secondary Smaller Droplet (Bottom-Left) -->
+  <g transform="translate(132, 332) scale(0.7)">
+    <path d="M 30,6 C 30,6 64,48 64,74 C 64,95 49,110 30,110 C 11,110 -4,95 -4,74 C -4,48 30,6 30,6 Z"
+          fill="#7f0000" stroke="#160200" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M 30,12 C 30,12 58,49 58,74 C 58,90 45,103 30,103 C 15,103 2,90 2,74 C 2,49 30,12 30,12 Z"
+          fill="url(#gasolineDrop)"/>
+    <ellipse cx="18" cy="68" rx="7" ry="16" transform="rotate(-26 18 68)" fill="#ffffff" opacity="0.82"/>
+    <circle cx="28" cy="44" r="4.5" fill="#ffffff" opacity="0.75"/>
+  </g>
+
+</svg>

@@ -4,7 +4,9 @@
  */
 
 /** Detect touch device */
-const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const isTouchDevice = ('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
 
 /** Design dimensions (reference for proportional positioning) */
 const DESIGN_WIDTH = 1024;
@@ -33,4 +35,8 @@ const config = {
     banner: false
 };
 
-const game = new Phaser.Game(config);
+// Initialize i18n, then start the game
+I18n.init().then(() => {
+    I18n.updateHTMLTexts();
+    window.game = new Phaser.Game(config);
+});

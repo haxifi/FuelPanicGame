@@ -1,0 +1,111 @@
+{
+  "boot": {
+    "loading": "Caricamento..."
+  },
+  "menu": {
+    "title": "⛽ FUEL PANIC ⛽",
+    "author": "CONCEPT BY SALVATORE TURBOLI",
+    "tagline": "\"Ferma gli accaparratori di benzina!\"",
+    "play_button": "▶ GIOCA!",
+    "prompt_touch": "Tocca GIOCA per iniziare",
+    "prompt_desktop": "Clicca GIOCA o premi SPAZIO per iniziare",
+    "instructions_touch": [
+      "👆 Tocca per sparare",
+      "🎯 Colpisci solo gli ACCAPARRATORI (rossi)",
+      "⚠️ NON colpire i clienti normali (verdi)",
+      "🔄 Tocca il pulsante R per ricaricare",
+      "⏱️ Sopravvivi il più a lungo possibile!"
+    ],
+    "instructions_desktop": [
+      "🖱️ Mira con il mouse, clicca per sparare",
+      "🎯 Colpisci solo gli ACCAPARRATORI (rossi)",
+      "⚠️ NON colpire i clienti normali (verdi)",
+      "🔄 Premi R per ricaricare",
+      "⏱️ Sopravvivi il più a lungo possibile!"
+    ]
+  },
+  "game": {
+    "score_label": "🎯 PUNTI:",
+    "reload": "RICARICA...",
+    "fuel_stolen_label": "Carburante rubato:",
+    "difficulty_label": "Livello: {{level}}",
+    "difficulty_up": "⬆️ DIFFICOLTÀ AUMENTATA!",
+    "time_up_text": "⏱️ TEMPO SCADUTO!",
+    "fuel_out_text": "⛽ BENZINA ESAURITA!",
+    "hit_label": "COLPITO!",
+    "combo_label": "COMBO x{{count}}!",
+    "flavor_messages": [
+      "\"Ma che fai?! Riempi solo il serbatoio!\"",
+      "\"Mamma mia, un'altra tanica!\"",
+      "\"Qui non si fa scorta!\"",
+      "\"Il benzinaio piange!\"",
+      "\"Prezzi alle stelle, pazzi in fila!\"",
+      "\"Hanno portato pure la vasca da bagno!\"",
+      "\"Emergenza carburante!\""
+    ]
+  },
+  "gameover": {
+    "title": "💥 GAME OVER 💥",
+    "reason_time_up": "⏱️ Il tempo è scaduto!",
+    "reason_fuel_out": "⛽ Troppo carburante rubato!",
+    "final_score_label": "PUNTEGGIO FINALE",
+    "rating_hero": "🏆 EROE DEL DISTRIBUTORE!",
+    "rating_great": "⭐ OTTIMO LAVORO!",
+    "rating_ok": "👍 NON MALE...",
+    "rating_bad": "😅 PUOI FARE DI MEGLIO!",
+    "stat_hoarders_caught": "Accaparratori beccati",
+    "stat_hoarders_escaped": "Accaparratori scappati",
+    "stat_innocents_hit": "Innocenti colpiti",
+    "stat_level_reached": "Livello raggiunto",
+    "comment_tribunal": "\"Il tribunale dei consumatori ti cerca...\"",
+    "comment_terror": "\"Sei il terrore degli accaparratori!\"",
+    "comment_fuel_gone": "\"La benzina è finita per colpa tua!\"",
+    "comment_default": "\"Non male per un tiratore dal balcone!\"",
+    "restart_button": "🔄 RIGIOCA!",
+    "main_menu": "🏠 Menu Principale"
+  },
+  "customer": {
+    "ape_hit_survives": "NON MOLLA!",
+    "ape_caught_messages": [
+      "APE FERMATA!",
+      "BECCATO!",
+      "NIENTE BENZINA!",
+      "FINITA LA CORSA!"
+    ],
+    "hoarder_caught_messages": [
+      "BECCATO!",
+      "FUORI DI QUI!",
+      "ACCAPARRATORE!",
+      "VIA! VIA!",
+      "SGAMATO!",
+      "NIENTE SCORTE!"
+    ],
+    "normal_hit_messages": [
+      "INNOCENTE!",
+      "NOOO!",
+      "ERA NORMALE!",
+      "ERRORE!",
+      "SBAGLIATO!"
+    ],
+    "ape_escaped_messages": [
+      "APE IN FUGA!",
+      "CARBURANTE RUBATO!",
+      "TROPPO VELOCE!",
+      "SCORTA COMPLETATA!"
+    ],
+    "hoarder_escaped_messages": [
+      "SCAPPATO!",
+      "TROPPO TARDI!",
+      "HA FATTO SCORTA!",
+      "CARBURANTE RUBATO!"
+    ]
+  },
+  "rotate_overlay": {
+    "title": "⛽ Ruota il telefono!",
+    "message": "Per giocare a <strong>Fuel Panic</strong><br>metti il telefono in orizzontale"
+  },
+  "html": {
+    "rotate_title": "⛽ Ruota il telefono!",
+    "rotate_message": "Per giocare a <strong>Fuel Panic</strong><br>metti il telefono in orizzontale"
+  }
+}

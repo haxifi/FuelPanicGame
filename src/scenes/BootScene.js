@@ -11,11 +11,23 @@ class BootScene extends Phaser.Scene {
         const H = this.cameras.main.height;
 
         // Show loading text
-        this.add.text(W / 2, H / 2, 'Caricamento...', {
+        this.loadingText = this.add.text(W / 2, H / 2, t('boot.loading'), {
             fontSize: '24px',
             fontFamily: 'Arial',
             color: '#ffffff'
         }).setOrigin(0.5);
+
+        this.handleResize = (gameSize) => {
+            this.cameras.main.setSize(gameSize.width, gameSize.height);
+            if (this.loadingText) {
+                this.loadingText.setPosition(gameSize.width / 2, gameSize.height / 2);
+            }
+        };
+
+        this.scale.on('resize', this.handleResize, this);
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.scale.off('resize', this.handleResize, this);
+        });
 
         // Generate all assets
         GraphicsGenerator.generate(this);

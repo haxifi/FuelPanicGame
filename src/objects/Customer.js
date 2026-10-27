@@ -217,7 +217,7 @@ class Customer extends Phaser.GameObjects.Container {
             });
 
             this.showMessage(
-                'NON MOLLA!',
+                t('customer.ape_hit_survives'),
                 '#ffaa00',
                 1000
             );
@@ -251,28 +251,10 @@ class Customer extends Phaser.GameObjects.Container {
         });
 
         const messages = this.isApeCar
-            ? [
-                'APE FERMATA!',
-                'BECCATO!',
-                'NIENTE BENZINA!',
-                'FINITA LA CORSA!'
-            ]
+            ? t('customer.ape_caught_messages')
             : this.isHoarder
-                ? [
-                    'BECCATO!',
-                    'FUORI DI QUI!',
-                    'ACCAPARRATORE!',
-                    'VIA! VIA!',
-                    'SGAMATO!',
-                    'NIENTE SCORTE!'
-                ]
-                : [
-                    'INNOCENTE!',
-                    'NOOO!',
-                    'ERA NORMALE!',
-                    'ERRORE!',
-                    'SBAGLIATO!'
-                ];
+                ? t('customer.hoarder_caught_messages')
+                : t('customer.normal_hit_messages');
 
         const color = this.isHoarder ? '#00ff00' : '#ff0000';
 
@@ -343,18 +325,8 @@ class Customer extends Phaser.GameObjects.Container {
             this.penalized = true;
 
             const messages = this.isApeCar
-                ? [
-                    'APE IN FUGA!',
-                    'CARBURANTE RUBATO!',
-                    'TROPPO VELOCE!',
-                    'SCORTA COMPLETATA!'
-                ]
-                : [
-                    'SCAPPATO!',
-                    'TROPPO TARDI!',
-                    'HA FATTO SCORTA!',
-                    'CARBURANTE RUBATO!'
-                ];
+                ? t('customer.ape_escaped_messages')
+                : t('customer.hoarder_escaped_messages');
 
             this.showMessage(
                 Phaser.Utils.Array.GetRandom(messages),

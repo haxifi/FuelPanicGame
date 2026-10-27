@@ -1,0 +1,111 @@
+{
+  "boot": {
+    "loading": "Loading..."
+  },
+  "menu": {
+    "title": "⛽ FUEL PANIC ⛽",
+    "author": "CONCEPT BY SALVATORE TURBOLI",
+    "tagline": "\"Stop the fuel hoarders!\"",
+    "play_button": "▶ PLAY!",
+    "prompt_touch": "Tap PLAY to start",
+    "prompt_desktop": "Click PLAY or press SPACE to start",
+    "instructions_touch": [
+      "👆 Tap to shoot",
+      "🎯 Hit only the HOARDERS (red)",
+      "⚠️ DON'T hit normal customers (green)",
+      "🔄 Tap the R button to reload",
+      "⏱️ Survive as long as you can!"
+    ],
+    "instructions_desktop": [
+      "🖱️ Aim with the mouse, click to shoot",
+      "🎯 Hit only the HOARDERS (red)",
+      "⚠️ DON'T hit normal customers (green)",
+      "🔄 Press R to reload",
+      "⏱️ Survive as long as you can!"
+    ]
+  },
+  "game": {
+    "score_label": "🎯 SCORE:",
+    "reload": "RELOADING...",
+    "fuel_stolen_label": "Fuel stolen:",
+    "difficulty_label": "Level: {{level}}",
+    "difficulty_up": "⬆️ DIFFICULTY INCREASED!",
+    "time_up_text": "⏱️ TIME'S UP!",
+    "fuel_out_text": "⛽ FUEL EXHAUSTED!",
+    "hit_label": "HIT!",
+    "combo_label": "COMBO x{{count}}!",
+    "flavor_messages": [
+      "\"What are you doing?! Just fill the tank!\"",
+      "\"Mama mia, another jerry can!\"",
+      "\"No hoarding allowed here!\"",
+      "\"The gas station attendant is crying!\"",
+      "\"Prices through the roof, crazies in line!\"",
+      "\"They even brought a bathtub!\"",
+      "\"Fuel emergency!\""
+    ]
+  },
+  "gameover": {
+    "title": "💥 GAME OVER 💥",
+    "reason_time_up": "⏱️ Time's up!",
+    "reason_fuel_out": "⛽ Too much fuel stolen!",
+    "final_score_label": "FINAL SCORE",
+    "rating_hero": "🏆 GAS STATION HERO!",
+    "rating_great": "⭐ GREAT JOB!",
+    "rating_ok": "👍 NOT BAD...",
+    "rating_bad": "😅 YOU CAN DO BETTER!",
+    "stat_hoarders_caught": "Hoarders caught",
+    "stat_hoarders_escaped": "Hoarders escaped",
+    "stat_innocents_hit": "Innocents hit",
+    "stat_level_reached": "Level reached",
+    "comment_tribunal": "\"The consumer court is looking for you...\"",
+    "comment_terror": "\"You're the terror of hoarders!\"",
+    "comment_fuel_gone": "\"The fuel ran out because of you!\"",
+    "comment_default": "\"Not bad for a balcony shooter!\"",
+    "restart_button": "🔄 PLAY AGAIN!",
+    "main_menu": "🏠 Main Menu"
+  },
+  "customer": {
+    "ape_hit_survives": "WON'T GIVE UP!",
+    "ape_caught_messages": [
+      "APE STOPPED!",
+      "GOTCHA!",
+      "NO FUEL FOR YOU!",
+      "END OF THE LINE!"
+    ],
+    "hoarder_caught_messages": [
+      "GOTCHA!",
+      "GET OUT!",
+      "HOARDER!",
+      "GO AWAY!",
+      "BUSTED!",
+      "NO STOCKPILING!"
+    ],
+    "normal_hit_messages": [
+      "INNOCENT!",
+      "NOOO!",
+      "WAS NORMAL!",
+      "MISTAKE!",
+      "WRONG ONE!"
+    ],
+    "ape_escaped_messages": [
+      "APE ESCAPED!",
+      "FUEL STOLEN!",
+      "TOO FAST!",
+      "STOCKPILE COMPLETE!"
+    ],
+    "hoarder_escaped_messages": [
+      "ESCAPED!",
+      "TOO LATE!",
+      "HOARDED FUEL!",
+      "FUEL STOLEN!"
+    ]
+  },
+  "rotate_overlay": {
+    "title": "⛽ Rotate your phone!",
+    "message": "To play <strong>Fuel Panic</strong><br>turn your phone sideways"
+  },
+  "html": {
+    "rotate_title": "⛽ Rotate your phone!",
+    "rotate_message": "To play <strong>Fuel Panic</strong><br>turn your phone sideways"
+  }
+}

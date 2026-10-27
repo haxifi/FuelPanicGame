@@ -76,12 +76,14 @@ class GameScene extends Phaser.Scene {
         });
 
         this.input.on('pointerdown', (pointer) => {
+            // Check if the user tapped on the reload button area and reload without firing a shot
+            if (this.isReloadButtonArea(pointer.x, pointer.y)) {
+                this.triggerReload();
+                return;
+            }
+
             // On touch devices any tap fires; on desktop only left button
             if (isTouchDevice) {
-                // Ignore taps on the reload button area (handled separately)
-                if (this.reloadBtn && this.reloadBtn.getBounds().contains(pointer.x, pointer.y)) {
-                    return;
-                }
                 this.shoot(pointer.x, pointer.y);
             } else if (pointer.leftButtonDown()) {
                 this.shoot(pointer.x, pointer.y);
@@ -119,16 +121,8 @@ class GameScene extends Phaser.Scene {
         this.time.delayedCall(500, () => this.spawnCustomer());
         this.time.delayedCall(1200, () => this.spawnCustomer());
 
-        // ---- Italian flavor messages ----
-        this.flavorMessages = [
-            '"Ma che fai?! Riempi solo il serbatoio!"',
-            '"Mamma mia, un\'altra tanica!"',
-            '"Qui non si fa scorta!"',
-            '"Il benzinaio piange!"',
-            '"Prezzi alle stelle, pazzi in fila!"',
-            '"Hanno portato pure la vasca da bagno!"',
-            '"Emergenza carburante!"'
-        ];
+        // ---- Flavor messages ----
+        this.flavorMessages = t('game.flavor_messages');
         this.showRandomMessage();
 
         // ---- Handle resize ----
@@ -169,6 +163,21 @@ class GameScene extends Phaser.Scene {
             pump.setPosition(W * pumpXRatios[i], H * pumpYRatio);
         });
 
+        // Reposition active customers associated with pumps
+        if (this.customers) {
+            this.customers.forEach((cust) => {
+                if (cust.pump && cust.state !== Customer.STATES.LEAVING && cust.state !== Customer.STATES.GONE) {
+                    cust.targetX = cust.pump.x;
+                    cust.targetY = cust.pump.y + 30;
+                    if (cust.state !== Customer.STATES.ARRIVING) {
+                        cust.x = cust.targetX;
+                        cust.y = cust.targetY;
+                    }
+                    if (cust.updateScale) cust.updateScale();
+                }
+            });
+        }
+
         // Reposition HUD elements
         this.repositionHUD(W, H);
     }
@@ -181,7 +190,7 @@ class GameScene extends Phaser.Scene {
         const hudY = 20 * sy;
 
         // Score
-        this.scoreLabel = this.add.text(20 * sx, hudY, '🎯 PUNTI:', {
+        this.scoreLabel = this.add.text(20 * sx, hudY, t('game.score_label'), {
             fontSize: `${Math.round(16 * sy)}px`, fontFamily: 'Arial', color: '#ffffff'
         }).setDepth(50).setScrollFactor(0);
 
@@ -205,25 +214,34 @@ class GameScene extends Phaser.Scene {
 
         // ---- On-screen reload button (touch devices) ----
         if (isTouchDevice) {
-            const rBtnX = 60 * sx;
-            const rBtnY = H - 60 * sy;
             const btnScale = Math.min(sx, sy);
+            this.reloadBtnRadius = Math.max(30, 32 * btnScale);
+            this.reloadBtnX = Math.max(this.reloadBtnRadius + 18, 65 * sx);
+            this.reloadBtnY = H - Math.max(this.reloadBtnRadius + 18, 65 * sy);
 
             // Background circle
             this.reloadBtnBg = this.add.graphics().setDepth(55).setScrollFactor(0);
-            this.reloadBtnBg.fillStyle(0x444444, 0.7);
-            this.reloadBtnBg.fillCircle(rBtnX, rBtnY, 28 * btnScale);
-            this.reloadBtnBg.lineStyle(2, 0xffaa00, 0.9);
-            this.reloadBtnBg.strokeCircle(rBtnX, rBtnY, 28 * btnScale);
 
-            this.reloadBtn = this.add.text(rBtnX, rBtnY, '🔄 R', {
-                fontSize: `${Math.round(16 * btnScale)}px`, fontFamily: 'Arial Black', color: '#ffcc00'
-            }).setOrigin(0.5).setDepth(56).setScrollFactor(0)
+            // Text
+            this.reloadBtn = this.add.text(this.reloadBtnX, this.reloadBtnY, '🔄 R', {
+                fontSize: `${Math.round(Math.max(16, 18 * btnScale))}px`,
+                fontFamily: 'Arial Black',
+                color: '#ffcc00'
+            }).setOrigin(0.5).setDepth(56).setScrollFactor(0);
+
+            // Interactive zone with generous touch padding (at least 75-80px hit target)
+            const touchSize = this.reloadBtnRadius * 2.5;
+            this.reloadZone = this.add.zone(this.reloadBtnX, this.reloadBtnY, touchSize, touchSize)
+                .setOrigin(0.5)
+                .setDepth(57)
+                .setScrollFactor(0)
                 .setInteractive({ useHandCursor: true });
 
-            this.reloadBtn.on('pointerdown', () => {
-                this.reload();
+            this.reloadZone.on('pointerdown', () => {
+                this.triggerReload();
             });
+
+            this.drawReloadButton(false);
         }
 
         // Timer
@@ -236,7 +254,7 @@ class GameScene extends Phaser.Scene {
         }).setDepth(50).setScrollFactor(0);
 
         // Fuel stolen meter
-        this.fuelStolenLabel = this.add.text(W - 224 * sx, hudY + 35 * sy, 'Carburante rubato:', {
+        this.fuelStolenLabel = this.add.text(W - 224 * sx, hudY + 35 * sy, t('game.fuel_stolen_label'), {
             fontSize: `${Math.round(12 * sy)}px`, fontFamily: 'Arial', color: '#ff6666'
         }).setDepth(50).setScrollFactor(0);
 
@@ -250,7 +268,7 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(50).setAlpha(0);
 
         // Difficulty indicator
-        this.diffText = this.add.text(W * (450 / 1024), hudY, 'Livello: 1', {
+        this.diffText = this.add.text(W * (450 / 1024), hudY, t('game.difficulty_label', { level: 1 }), {
             fontSize: `${Math.round(14 * sy)}px`, fontFamily: 'Arial', color: '#aaaaaa'
         }).setDepth(50).setScrollFactor(0);
 
@@ -308,19 +326,22 @@ class GameScene extends Phaser.Scene {
 
         // Reload button repositioning
         if (isTouchDevice && this.reloadBtnBg) {
-            const rBtnX = 60 * sx;
-            const rBtnY = H - 60 * sy;
             const btnScale = Math.min(sx, sy);
+            this.reloadBtnRadius = Math.max(30, 32 * btnScale);
+            this.reloadBtnX = Math.max(this.reloadBtnRadius + 18, 65 * sx);
+            this.reloadBtnY = H - Math.max(this.reloadBtnRadius + 18, 65 * sy);
 
-            this.reloadBtnBg.clear();
-            this.reloadBtnBg.fillStyle(0x444444, 0.7);
-            this.reloadBtnBg.fillCircle(rBtnX, rBtnY, 28 * btnScale);
-            this.reloadBtnBg.lineStyle(2, 0xffaa00, 0.9);
-            this.reloadBtnBg.strokeCircle(rBtnX, rBtnY, 28 * btnScale);
+            this.drawReloadButton(this.isReloading);
 
             if (this.reloadBtn) {
-                this.reloadBtn.setPosition(rBtnX, rBtnY);
-                this.reloadBtn.setFontSize(Math.round(16 * btnScale));
+                this.reloadBtn.setPosition(this.reloadBtnX, this.reloadBtnY);
+                this.reloadBtn.setFontSize(Math.round(Math.max(16, 18 * btnScale)));
+            }
+
+            if (this.reloadZone) {
+                const touchSize = this.reloadBtnRadius * 2.5;
+                this.reloadZone.setPosition(this.reloadBtnX, this.reloadBtnY);
+                this.reloadZone.setSize(touchSize, touchSize);
             }
         }
 
@@ -436,7 +457,7 @@ class GameScene extends Phaser.Scene {
 
             if (apeCarSurvivedHit) {
                 this.playSound('sfx_hit');
-                this.showPoints(x, y - 30, 'COLPITO!', '#ffaa00');
+                this.showPoints(x, y - 30, t('game.hit_label'), '#ffaa00');
                 this.createHitParticles(x, y);
             } else if (wasHoarder) {
                 // Hoarder captured: award points and increase the combo.
@@ -452,7 +473,7 @@ class GameScene extends Phaser.Scene {
                 this.showPoints(x, y - 30, `+${points}`, '#00ff00');
 
                 if (this.combo > 1) {
-                    this.comboText.setText(`COMBO x${this.combo}!`);
+                    this.comboText.setText(t('game.combo_label', { count: this.combo }));
                     this.comboText.setAlpha(1);
 
                     this.tweens.add({
@@ -498,14 +519,66 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    isReloadButtonArea(x, y) {
+        if (!this.reloadBtn && !this.reloadZone && !this.reloadBtnBg) return false;
+        const radius = (this.reloadBtnRadius || 30) * 1.35;
+        const dx = x - (this.reloadBtnX || 0);
+        const dy = y - (this.reloadBtnY || 0);
+        return (dx * dx + dy * dy) <= (radius * radius);
+    }
+
+    triggerReload() {
+        if (this.gameOver || this.isReloading) return;
+        if (this.ammo === this.maxAmmo) {
+            this.playSound('sfx_empty');
+            if (this.reloadBtn) {
+                this.tweens.add({
+                    targets: this.reloadBtn,
+                    scale: { from: 1.25, to: 1 },
+                    duration: 160
+                });
+            }
+            return;
+        }
+        this.reload();
+    }
+
+    drawReloadButton(active = false) {
+        if (!this.reloadBtnBg) return;
+        const x = this.reloadBtnX;
+        const y = this.reloadBtnY;
+        const r = this.reloadBtnRadius;
+        const isReloading = active || this.isReloading;
+
+        this.reloadBtnBg.clear();
+        this.reloadBtnBg.fillStyle(isReloading ? 0x664400 : 0x222233, 0.85);
+        this.reloadBtnBg.fillCircle(x, y, r);
+        this.reloadBtnBg.lineStyle(3, isReloading ? 0xffcc00 : 0xffaa00, 1);
+        this.reloadBtnBg.strokeCircle(x, y, r);
+    }
+
     reload() {
         if (this.isReloading || this.ammo === this.maxAmmo || this.gameOver) return;
 
         this.isReloading = true;
         this.playSound('sfx_reload');
 
-        this.reloadText.setText('RICARICA...');
+        this.reloadText.setText(t('game.reload'));
         this.reloadText.setAlpha(1);
+
+        // Visual feedback on reload button
+        this.drawReloadButton(true);
+        if (this.reloadBtn) {
+            this.tweens.add({
+                targets: this.reloadBtn,
+                angle: 360,
+                duration: 800,
+                ease: 'Cubic.easeOut',
+                onComplete: () => {
+                    if (this.reloadBtn) this.reloadBtn.setAngle(0);
+                }
+            });
+        }
 
         // Reload animation
         this.tweens.add({
@@ -518,6 +591,7 @@ class GameScene extends Phaser.Scene {
                 this.ammo = this.maxAmmo;
                 this.isReloading = false;
                 this.reloadText.setAlpha(0);
+                this.drawReloadButton(false);
                 this.updateAmmoDisplay();
             }
         });
@@ -547,7 +621,7 @@ class GameScene extends Phaser.Scene {
         if (this.gameOver) return;
 
         this.difficulty += 0.5;
-        this.diffText.setText(`Livello: ${Math.floor(this.difficulty)}`);
+        this.diffText.setText(t('game.difficulty_label', { level: Math.floor(this.difficulty) }));
 
         // Speed up spawning
         const newDelay = Math.max(800, 2500 - this.difficulty * 200);
@@ -560,7 +634,7 @@ class GameScene extends Phaser.Scene {
         });
 
         // Flash difficulty change
-        const flash = this.add.text(this._W / 2, this._H * (150 / 600), `⬆️ DIFFICOLTÀ AUMENTATA!`, {
+        const flash = this.add.text(this._W / 2, this._H * (150 / 600), t('game.difficulty_up'), {
             fontSize: `${Math.round(18 * this._sy)}px`, fontFamily: 'Arial Black', color: '#ff6600',
             stroke: '#000000', strokeThickness: 3
         }).setOrigin(0.5).setDepth(50);
@@ -688,7 +762,7 @@ class GameScene extends Phaser.Scene {
         const sy = this._sy;
 
         // Show game over text briefly
-        const overText = this.add.text(W / 2, H * (250 / 600), reason === 'TIME_UP' ? '⏱️ TEMPO SCADUTO!' : '⛽ BENZINA ESAURITA!', {
+        const overText = this.add.text(W / 2, H * (250 / 600), reason === 'TIME_UP' ? t('game.time_up_text') : t('game.fuel_out_text'), {
             fontSize: `${Math.round(36 * sy)}px`, fontFamily: 'Arial Black', color: '#ff0000',
             stroke: '#000000', strokeThickness: 5
         }).setOrigin(0.5).setDepth(100);
