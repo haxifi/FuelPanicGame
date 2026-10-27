@@ -6,23 +6,19 @@
 /** Detect touch device */
 const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
+/** Design dimensions (reference for proportional positioning) */
+const DESIGN_WIDTH = 1024;
+const DESIGN_HEIGHT = 600;
+
 const config = {
     type: Phaser.AUTO,
-    width: 1024,
-    height: 600,
     parent: document.body,
     backgroundColor: '#1a1a2e',
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: {
-            width: 480,
-            height: 280
-        },
-        max: {
-            width: 1920,
-            height: 1080
-        }
+        width: '100%',
+        height: '100%'
     },
     input: {
         activePointers: 2,

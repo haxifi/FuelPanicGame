@@ -7,8 +7,11 @@ class BootScene extends Phaser.Scene {
     }
 
     create() {
+        const W = this.cameras.main.width;
+        const H = this.cameras.main.height;
+
         // Show loading text
-        const text = this.add.text(512, 300, 'Caricamento...', {
+        this.add.text(W / 2, H / 2, 'Caricamento...', {
             fontSize: '24px',
             fontFamily: 'Arial',
             color: '#ffffff'

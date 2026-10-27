@@ -1,6 +1,7 @@
 /**
  * GameScene - Main gameplay scene
  * Supports both desktop (mouse + keyboard) and mobile (touch) input.
+ * All positions are computed relative to camera dimensions for full responsiveness.
  */
 class GameScene extends Phaser.Scene {
     constructor() {
@@ -27,32 +28,43 @@ class GameScene extends Phaser.Scene {
         this.combo = 0;
         this.comboTimer = 0;
 
+        // ---- Responsive layout helpers ----
+        const W = this.cameras.main.width;
+        const H = this.cameras.main.height;
+        this._W = W;
+        this._H = H;
+        this._sx = W / DESIGN_WIDTH;
+        this._sy = H / DESIGN_HEIGHT;
+
         // ---- Background ----
-        this.add.image(512, 300, 'background').setDepth(0);
+        this.bgImage = this.add.image(W / 2, H / 2, 'background')
+            .setDisplaySize(W, H).setDepth(0);
 
         // ---- Station sign text ----
-        this.add.text(500, 162, 'TurbOil Service & Fuel 😎', {
-            fontSize: '14px',
+        this.stationSign = this.add.text(W * (500 / 1024), H * (162 / 600), 'TurbOil Service & Fuel 😎', {
+            fontSize: `${Math.round(14 * this._sy)}px`,
             fontFamily: 'Arial Black',
             color: '#cc0000'
         }).setOrigin(0.5).setDepth(1);
 
         // ---- Fuel pumps ----
         this.pumps = [];
-        const pumpXPositions = [200, 380, 560, 740];
-        pumpXPositions.forEach((px, i) => {
-            const pump = new FuelPump(this, px, 400, i);
+        const pumpXRatios = [200 / 1024, 380 / 1024, 560 / 1024, 740 / 1024];
+        const pumpYRatio = 400 / 600;
+        pumpXRatios.forEach((ratio, i) => {
+            const pump = new FuelPump(this, W * ratio, H * pumpYRatio, i);
             this.pumps.push(pump);
         });
 
         // ---- Balcony railing (foreground) ----
-        this.add.image(512, 580, 'balconyRailing').setDepth(10);
+        this.balcony = this.add.image(W / 2, H * (580 / 600), 'balconyRailing')
+            .setDisplaySize(W, 34 * this._sy).setDepth(10);
 
         // ---- HUD ----
         this.createHUD();
 
         // ---- Crosshair (desktop only) ----
-        this.crosshair = this.add.sprite(512, 300, 'crosshair').setDepth(100);
+        this.crosshair = this.add.sprite(W / 2, H / 2, 'crosshair').setDepth(100);
         if (isTouchDevice) {
             this.crosshair.setVisible(false);
         }
@@ -118,47 +130,96 @@ class GameScene extends Phaser.Scene {
             '"Emergenza carburante!"'
         ];
         this.showRandomMessage();
+
+        // ---- Handle resize ----
+        this.scale.on('resize', this.handleResize, this);
+    }
+
+    handleResize(gameSize) {
+        const W = gameSize.width;
+        const H = gameSize.height;
+        this._W = W;
+        this._H = H;
+        this._sx = W / DESIGN_WIDTH;
+        this._sy = H / DESIGN_HEIGHT;
+
+        this.cameras.main.setSize(W, H);
+
+        // Reposition background
+        if (this.bgImage) {
+            this.bgImage.setPosition(W / 2, H / 2).setDisplaySize(W, H);
+        }
+
+        // Reposition station sign
+        if (this.stationSign) {
+            this.stationSign.setPosition(W * (500 / 1024), H * (162 / 600));
+            this.stationSign.setFontSize(Math.round(14 * this._sy));
+        }
+
+        // Reposition balcony
+        if (this.balcony) {
+            this.balcony.setPosition(W / 2, H * (580 / 600))
+                .setDisplaySize(W, 34 * this._sy);
+        }
+
+        // Reposition pumps
+        const pumpXRatios = [200 / 1024, 380 / 1024, 560 / 1024, 740 / 1024];
+        const pumpYRatio = 400 / 600;
+        this.pumps.forEach((pump, i) => {
+            pump.setPosition(W * pumpXRatios[i], H * pumpYRatio);
+        });
+
+        // Reposition HUD elements
+        this.repositionHUD(W, H);
     }
 
     createHUD() {
-        const hudY = 20;
+        const W = this._W;
+        const H = this._H;
+        const sx = this._sx;
+        const sy = this._sy;
+        const hudY = 20 * sy;
 
         // Score
-        this.add.text(20, hudY, '🎯 PUNTI:', {
-            fontSize: '16px', fontFamily: 'Arial', color: '#ffffff'
+        this.scoreLabel = this.add.text(20 * sx, hudY, '🎯 PUNTI:', {
+            fontSize: `${Math.round(16 * sy)}px`, fontFamily: 'Arial', color: '#ffffff'
         }).setDepth(50).setScrollFactor(0);
 
-        this.scoreText = this.add.text(120, hudY, '0', {
-            fontSize: '20px', fontFamily: 'Arial Black', color: '#ffcc00'
+        this.scoreText = this.add.text(120 * sx, hudY, '0', {
+            fontSize: `${Math.round(20 * sy)}px`, fontFamily: 'Arial Black', color: '#ffcc00'
         }).setDepth(50).setScrollFactor(0);
 
         // Ammo
-        this.ammoContainer = this.add.container(20, hudY + 35).setDepth(50);
+        this.ammoContainer = this.add.container(20 * sx, hudY + 35 * sy).setDepth(50);
         this.ammoText = this.add.text(0, 0, '🔫', {
-            fontSize: '16px', fontFamily: 'Arial', color: '#ffffff'
+            fontSize: `${Math.round(16 * sy)}px`, fontFamily: 'Arial', color: '#ffffff'
         });
         this.ammoContainer.add(this.ammoText);
         this.ammoBullets = [];
         this.updateAmmoDisplay();
 
         // Reload indicator
-        this.reloadText = this.add.text(150, hudY + 35, '', {
-            fontSize: '14px', fontFamily: 'Arial Black', color: '#ffaa00'
+        this.reloadText = this.add.text(150 * sx, hudY + 35 * sy, '', {
+            fontSize: `${Math.round(14 * sy)}px`, fontFamily: 'Arial Black', color: '#ffaa00'
         }).setDepth(50).setScrollFactor(0).setAlpha(0);
 
         // ---- On-screen reload button (touch devices) ----
         if (isTouchDevice) {
-            // Background circle
-            const rBtnG = this.add.graphics().setDepth(55).setScrollFactor(0);
-            rBtnG.fillStyle(0x444444, 0.7);
-            rBtnG.fillCircle(60, 540, 28);
-            rBtnG.lineStyle(2, 0xffaa00, 0.9);
-            rBtnG.strokeCircle(60, 540, 28);
+            const rBtnX = 60 * sx;
+            const rBtnY = H - 60 * sy;
+            const btnScale = Math.min(sx, sy);
 
-            this.reloadBtn = this.add.text(60, 540, '🔄 R', {
-                fontSize: '16px', fontFamily: 'Arial Black', color: '#ffcc00'
+            // Background circle
+            this.reloadBtnBg = this.add.graphics().setDepth(55).setScrollFactor(0);
+            this.reloadBtnBg.fillStyle(0x444444, 0.7);
+            this.reloadBtnBg.fillCircle(rBtnX, rBtnY, 28 * btnScale);
+            this.reloadBtnBg.lineStyle(2, 0xffaa00, 0.9);
+            this.reloadBtnBg.strokeCircle(rBtnX, rBtnY, 28 * btnScale);
+
+            this.reloadBtn = this.add.text(rBtnX, rBtnY, '🔄 R', {
+                fontSize: `${Math.round(16 * btnScale)}px`, fontFamily: 'Arial Black', color: '#ffcc00'
             }).setOrigin(0.5).setDepth(56).setScrollFactor(0)
-              .setInteractive({ useHandCursor: true });
+                .setInteractive({ useHandCursor: true });
 
             this.reloadBtn.on('pointerdown', () => {
                 this.reload();
@@ -166,38 +227,105 @@ class GameScene extends Phaser.Scene {
         }
 
         // Timer
-        this.add.text(890, hudY, '⏱️', {
-            fontSize: '16px', fontFamily: 'Arial', color: '#ffffff'
+        this.timerIcon = this.add.text(W - 134 * sx, hudY, '⏱️', {
+            fontSize: `${Math.round(16 * sy)}px`, fontFamily: 'Arial', color: '#ffffff'
         }).setDepth(50).setScrollFactor(0);
 
-        this.timerText = this.add.text(920, hudY, this.formatTime(this.timeLeft), {
-            fontSize: '20px', fontFamily: 'Arial Black', color: '#ffffff'
+        this.timerText = this.add.text(W - 104 * sx, hudY, this.formatTime(this.timeLeft), {
+            fontSize: `${Math.round(20 * sy)}px`, fontFamily: 'Arial Black', color: '#ffffff'
         }).setDepth(50).setScrollFactor(0);
 
         // Fuel stolen meter
-        this.add.text(800, hudY + 35, 'Carburante rubato:', {
-            fontSize: '12px', fontFamily: 'Arial', color: '#ff6666'
+        this.fuelStolenLabel = this.add.text(W - 224 * sx, hudY + 35 * sy, 'Carburante rubato:', {
+            fontSize: `${Math.round(12 * sy)}px`, fontFamily: 'Arial', color: '#ff6666'
         }).setDepth(50).setScrollFactor(0);
 
         this.fuelStolenBar = this.add.graphics().setDepth(50).setScrollFactor(0);
         this.updateFuelStolenBar();
 
         // Combo text
-        this.comboText = this.add.text(512, 100, '', {
-            fontSize: '24px', fontFamily: 'Arial Black', color: '#ff6600',
+        this.comboText = this.add.text(W / 2, H * (100 / 600), '', {
+            fontSize: `${Math.round(24 * sy)}px`, fontFamily: 'Arial Black', color: '#ff6600',
             stroke: '#000000', strokeThickness: 4
         }).setOrigin(0.5).setDepth(50).setAlpha(0);
 
         // Difficulty indicator
-        this.diffText = this.add.text(450, hudY, 'Livello: 1', {
-            fontSize: '14px', fontFamily: 'Arial', color: '#aaaaaa'
+        this.diffText = this.add.text(W * (450 / 1024), hudY, 'Livello: 1', {
+            fontSize: `${Math.round(14 * sy)}px`, fontFamily: 'Arial', color: '#aaaaaa'
         }).setDepth(50).setScrollFactor(0);
 
         // Message area
-        this.messageText = this.add.text(512, 560, '', {
-            fontSize: '13px', fontFamily: 'Arial', color: '#ffcc00',
+        this.messageText = this.add.text(W / 2, H * (560 / 600), '', {
+            fontSize: `${Math.round(13 * sy)}px`, fontFamily: 'Arial', color: '#ffcc00',
             fontStyle: 'italic', stroke: '#000000', strokeThickness: 2
         }).setOrigin(0.5).setDepth(11);
+    }
+
+    repositionHUD(W, H) {
+        const sx = this._sx;
+        const sy = this._sy;
+        const hudY = 20 * sy;
+
+        if (this.scoreLabel) {
+            this.scoreLabel.setPosition(20 * sx, hudY);
+            this.scoreLabel.setFontSize(Math.round(16 * sy));
+        }
+        if (this.scoreText) {
+            this.scoreText.setPosition(120 * sx, hudY);
+            this.scoreText.setFontSize(Math.round(20 * sy));
+        }
+        if (this.ammoContainer) {
+            this.ammoContainer.setPosition(20 * sx, hudY + 35 * sy);
+        }
+        if (this.reloadText) {
+            this.reloadText.setPosition(150 * sx, hudY + 35 * sy);
+            this.reloadText.setFontSize(Math.round(14 * sy));
+        }
+        if (this.timerIcon) {
+            this.timerIcon.setPosition(W - 134 * sx, hudY);
+            this.timerIcon.setFontSize(Math.round(16 * sy));
+        }
+        if (this.timerText) {
+            this.timerText.setPosition(W - 104 * sx, hudY);
+            this.timerText.setFontSize(Math.round(20 * sy));
+        }
+        if (this.fuelStolenLabel) {
+            this.fuelStolenLabel.setPosition(W - 224 * sx, hudY + 35 * sy);
+            this.fuelStolenLabel.setFontSize(Math.round(12 * sy));
+        }
+        if (this.comboText) {
+            this.comboText.setPosition(W / 2, H * (100 / 600));
+            this.comboText.setFontSize(Math.round(24 * sy));
+        }
+        if (this.diffText) {
+            this.diffText.setPosition(W * (450 / 1024), hudY);
+            this.diffText.setFontSize(Math.round(14 * sy));
+        }
+        if (this.messageText) {
+            this.messageText.setPosition(W / 2, H * (560 / 600));
+            this.messageText.setFontSize(Math.round(13 * sy));
+        }
+
+        // Reload button repositioning
+        if (isTouchDevice && this.reloadBtnBg) {
+            const rBtnX = 60 * sx;
+            const rBtnY = H - 60 * sy;
+            const btnScale = Math.min(sx, sy);
+
+            this.reloadBtnBg.clear();
+            this.reloadBtnBg.fillStyle(0x444444, 0.7);
+            this.reloadBtnBg.fillCircle(rBtnX, rBtnY, 28 * btnScale);
+            this.reloadBtnBg.lineStyle(2, 0xffaa00, 0.9);
+            this.reloadBtnBg.strokeCircle(rBtnX, rBtnY, 28 * btnScale);
+
+            if (this.reloadBtn) {
+                this.reloadBtn.setPosition(rBtnX, rBtnY);
+                this.reloadBtn.setFontSize(Math.round(16 * btnScale));
+            }
+        }
+
+        this.updateAmmoDisplay();
+        this.updateFuelStolenBar();
     }
 
     updateAmmoDisplay() {
@@ -205,9 +333,12 @@ class GameScene extends Phaser.Scene {
         this.ammoBullets.forEach(b => b.destroy());
         this.ammoBullets = [];
 
+        const sy = this._sy || 1;
+        const sx = this._sx || 1;
+
         for (let i = 0; i < this.maxAmmo; i++) {
-            const bullet = this.add.text(30 + i * 18, 55, '|', {
-                fontSize: '20px',
+            const bullet = this.add.text(30 * sx + i * 18 * sx, 55 * sy, '|', {
+                fontSize: `${Math.round(20 * sy)}px`,
                 fontFamily: 'Courier',
                 fontStyle: 'bold',
                 color: i < this.ammo ? '#ffcc00' : '#444444'
@@ -219,7 +350,13 @@ class GameScene extends Phaser.Scene {
     updateFuelStolenBar() {
         this.fuelStolenBar.clear();
 
-        const barX = 800, barY = 70, barW = 180, barH = 12;
+        const W = this._W || DESIGN_WIDTH;
+        const sx = this._sx || 1;
+        const sy = this._sy || 1;
+        const barX = W - 224 * sx;
+        const barY = 70 * sy;
+        const barW = 180 * sx;
+        const barH = 12 * sy;
 
         // Background
         this.fuelStolenBar.fillStyle(0x333333, 0.8);
@@ -321,10 +458,10 @@ class GameScene extends Phaser.Scene {
                     this.tweens.add({
                         targets: this.comboText,
                         alpha: 0,
-                        y: 80,
+                        y: this._H * (80 / 600),
                         duration: 1500,
                         onComplete: () => {
-                            this.comboText.y = 100;
+                            this.comboText.y = this._H * (100 / 600);
                         }
                     });
                 }
@@ -423,15 +560,15 @@ class GameScene extends Phaser.Scene {
         });
 
         // Flash difficulty change
-        const flash = this.add.text(512, 150, `⬆️ DIFFICOLTÀ AUMENTATA!`, {
-            fontSize: '18px', fontFamily: 'Arial Black', color: '#ff6600',
+        const flash = this.add.text(this._W / 2, this._H * (150 / 600), `⬆️ DIFFICOLTÀ AUMENTATA!`, {
+            fontSize: `${Math.round(18 * this._sy)}px`, fontFamily: 'Arial Black', color: '#ff6600',
             stroke: '#000000', strokeThickness: 3
         }).setOrigin(0.5).setDepth(50);
 
         this.tweens.add({
             targets: flash,
             alpha: 0,
-            y: 120,
+            y: this._H * (120 / 600),
             duration: 2000,
             onComplete: () => flash.destroy()
         });
@@ -484,8 +621,9 @@ class GameScene extends Phaser.Scene {
     }
 
     showPoints(x, y, text, color) {
+        const sy = this._sy || 1;
         const txt = this.add.text(x, y, text, {
-            fontSize: '22px',
+            fontSize: `${Math.round(22 * sy)}px`,
             fontFamily: 'Arial Black',
             color: color,
             stroke: '#000000',
@@ -494,7 +632,7 @@ class GameScene extends Phaser.Scene {
 
         this.tweens.add({
             targets: txt,
-            y: y - 50,
+            y: y - 50 * sy,
             alpha: 0,
             duration: 1000,
             onComplete: () => txt.destroy()
@@ -539,12 +677,19 @@ class GameScene extends Phaser.Scene {
         this.difficultyTimer.remove();
         this.clockEvent.remove();
 
+        // Clean up resize listener
+        this.scale.off('resize', this.handleResize, this);
+
         // Dramatic slow-mo
         this.cameras.main.flash(500, 255, 100, 0);
 
+        const W = this._W;
+        const H = this._H;
+        const sy = this._sy;
+
         // Show game over text briefly
-        const overText = this.add.text(512, 250, reason === 'TIME_UP' ? '⏱️ TEMPO SCADUTO!' : '⛽ BENZINA ESAURITA!', {
-            fontSize: '36px', fontFamily: 'Arial Black', color: '#ff0000',
+        const overText = this.add.text(W / 2, H * (250 / 600), reason === 'TIME_UP' ? '⏱️ TEMPO SCADUTO!' : '⛽ BENZINA ESAURITA!', {
+            fontSize: `${Math.round(36 * sy)}px`, fontFamily: 'Arial Black', color: '#ff0000',
             stroke: '#000000', strokeThickness: 5
         }).setOrigin(0.5).setDepth(100);
 
